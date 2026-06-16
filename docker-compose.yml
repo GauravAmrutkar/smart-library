@@ -3,9 +3,10 @@ services:
   backend:
     build: ./backend
     container_name: library_backend
-    command: uv run python manage.py runserver 0.0.0.0:8000
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/app
+      - /app/.venv
     ports:
       - "8000:8000"
     depends_on:
