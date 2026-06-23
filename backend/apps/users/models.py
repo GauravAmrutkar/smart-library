@@ -3,22 +3,15 @@ from django.db import models
 
 
 class User(AbstractUser):
-
     class Roles(models.TextChoices):
         ADMIN = "ADMIN", "Admin"
         CUSTOMER = "CUSTOMER", "Customer"
 
     role = models.CharField(
-        max_length=20,
-        choices=Roles.choices,
-        default=Roles.CUSTOMER
+        max_length=20, choices=Roles.choices, default=Roles.CUSTOMER
     )
 
-    phone_number = models.CharField(
-        max_length=15,
-        blank=True,
-        null=True
-    )
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
