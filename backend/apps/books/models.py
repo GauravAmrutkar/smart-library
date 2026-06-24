@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 
 # Create your models here.
 
@@ -60,6 +61,18 @@ class Inventory(models.Model):
     available_store_stock = models.PositiveIntegerField(default=0)
 
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(available_library_stock__gte=0),
+                name="library_stock_non_negative",
+            ),
+            models.CheckConstraint(
+                condition=Q(available_store_stock__gte=0),
+                name="store_stock_non_negative",
+            ),
+        ]
 
     def __str__(self):
         return self.book.title
