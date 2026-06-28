@@ -22,7 +22,7 @@ class SubscriptionPlan(models.Model):
 class UserSubscription(models.Model):
     class Status(models.TextChoices):
         ACTIVE = "ACTIVE", "Active"
-        EXPIRED = "EXPIRED", "Expired"
+        PAUSED = "PAUSED", "Paused"
         CANCELLED = "CANCELLED", "Cancelled"
 
     user = models.ForeignKey(
@@ -33,11 +33,13 @@ class UserSubscription(models.Model):
 
     start_date = models.DateField()
 
-    end_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
 
     status = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.ACTIVE
+        max_length=20, choices=Status.choices, default=Status.PAUSED
     )
+
+    last_billing_date = models.DateField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

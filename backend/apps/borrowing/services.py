@@ -1,10 +1,11 @@
 from datetime import timedelta
 
-from books.models import Book, Inventory
 from django.db import transaction
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
-from subscriptions.models import UserSubscription
+
+from apps.books.models import Book, Inventory
+from apps.subscriptions.models import UserSubscription
 
 from .models import BorrowTransaction
 
@@ -48,7 +49,9 @@ class BorrowService:
                 book=book,
                 due_date=due_date,
             )
+            subscription.status = UserSubscription.Status.ACTIVE
 
+            subscription.save(update_fields=["status"])
         return transaction_obj
 
 
@@ -89,5 +92,18 @@ class ReturnService:
             transaction_obj.return_date = timezone.now().date()
 
             transaction_obj.save()
+            active_books = BorrowTransaction.objects.filter(
+                user=user, status=BorrowTransaction.Status.BORROWED
+            ).count()
+            active_books = BorrowTransaction.objects.filter(
+                user=user, status=BorrowTransaction.Status.BORROWED
+            ).count()
+            subscription = UserSubscription.objects.filter(
+                user=user, status=UserSubscription.Status.ACTIVE
+            ).first()
+            if subscription and active_books == 0:
+                subscription.status = UserSubscription.Status.PAUSED
+
+                subscription.save(update_fields=["status"])
 
         return transaction_obj

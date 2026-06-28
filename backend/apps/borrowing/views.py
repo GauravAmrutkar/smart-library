@@ -23,32 +23,25 @@ class BorrowBookView(APIView):
 
 
 class ReturnBookView(APIView):
-
-    permission_classes = [
-        IsAuthenticated
-    ]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
 
-        transaction_id = request.data.get(
-            "transaction_id"
-        )
+        transaction_id = request.data.get("transaction_id")
 
-        transaction_obj = (
-            ReturnService.return_book(
-                request.user,
-                transaction_id,
-            )
+        transaction_obj = ReturnService.return_book(
+            request.user,
+            transaction_id,
         )
 
         return Response(
             {
-                "message":
-                "Book returned successfully",
-                "transaction_id":
-                transaction_obj.id,
+                "message": "Book returned successfully",
+                "transaction_id": transaction_obj.id,
             }
         )
+
+
 class BorrowHistoryView(generics.ListAPIView):
     serializer_class = BorrowTransactionSerializer
 
