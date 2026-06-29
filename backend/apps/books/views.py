@@ -1,15 +1,13 @@
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework import generics, viewsets
 from rest_framework.exceptions import ValidationError
-from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+
 from apps.users.permissions import IsAdminUserRole
 
-from .models import Publisher, Book, Inventory
-from .serializers import PublisherSerializer, BookSerializer, InventorySerializer
+from .models import Book, Inventory, Publisher
+from .serializers import BookSerializer, InventorySerializer, PublisherSerializer
 from .service import PublisherService
-from django_filters.rest_framework import DjangoFilterBackend
 from .validators import PublisherValidator
 
 
