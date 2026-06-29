@@ -3,8 +3,10 @@ from django.contrib import admin
 from .models import (
     Author,
     Book,
+    BookImage,
     Category,
     Inventory,
+    Language,
     Publisher,
 )
 
@@ -45,14 +47,35 @@ class PublisherAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(Language)
+class LanguageAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "name",
+        "code",
+    )
+
+    search_fields = (
+        "name",
+        "code",
+    )
+
+
+class BookImageInline(admin.TabularInline):
+    model = BookImage
+    extra = 1
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "title",
+        "edition",
         "author",
         "publisher",
-        "category",
+        "language",
+        "status",
         "price",
     )
 
@@ -62,9 +85,16 @@ class BookAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
+        "status",
+        "cover_type",
         "category",
         "publisher",
+        "language",
     )
+
+    inlines = [
+        BookImageInline,
+    ]
 
 
 @admin.register(Inventory)

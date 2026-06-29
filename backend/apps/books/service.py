@@ -1,5 +1,3 @@
-
-
 class PublisherService:
     """
     Business workflows for Publisher.

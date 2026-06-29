@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Author, Book, Category, Inventory, Publisher
+from .models import Author, Book, Category, Inventory, Language, Publisher
 
 
 def validate(self, attrs):
@@ -36,6 +36,16 @@ class PublisherSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = (
+            "id",
+            "name",
+            "code",
+        )
+
+
 class InventoryNestedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
@@ -54,11 +64,32 @@ class BookSerializer(serializers.ModelSerializer):
 
     publisher = PublisherSerializer(read_only=True)
 
+    language = LanguageSerializer(read_only=True)
+
     inventory = InventoryNestedSerializer(read_only=True)
 
     class Meta:
         model = Book
-        fields = "__all__"
+        fields = (
+            "id",
+            "title",
+            "subtitle",
+            "isbn_13",
+            "isbn_10",
+            "description",
+            "edition",
+            "pages",
+            "price",
+            "cover_type",
+            "status",
+            "publication_date",
+            "author",
+            "publisher",
+            "language",
+            "category",
+            "inventory",
+            "images",
+        )
 
 
 class InventorySerializer(serializers.ModelSerializer):
