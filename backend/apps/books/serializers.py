@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Author, Book, Category, Inventory
+from .models import Author, Book, Category, Inventory, Publisher
 
 
 def validate(self, attrs):
@@ -30,6 +30,12 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class PublisherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Publisher
+        fields = "__all__"
+
+
 class InventoryNestedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
@@ -42,7 +48,13 @@ class InventoryNestedSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-    inventry = InventoryNestedSerializer(read_only=True)
+    author = AuthorSerializer(read_only=True)
+
+    category = CategorySerializer(read_only=True)
+
+    publisher = PublisherSerializer(read_only=True)
+
+    inventory = InventoryNestedSerializer(read_only=True)
 
     class Meta:
         model = Book

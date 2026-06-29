@@ -24,6 +24,44 @@ class Author(models.Model):
         return self.name
 
 
+class Publisher(models.Model):
+    """
+    Stores book publisher information.
+    """
+
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+    )
+
+    email = models.EmailField(
+        blank=True,
+    )
+
+    website = models.URLField(
+        blank=True,
+    )
+
+    country = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
 class Book(models.Model):
     title = models.CharField(max_length=255)
 
@@ -36,7 +74,13 @@ class Book(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, related_name="books"
     )
-
+    publisher = models.ForeignKey(
+        Publisher,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="books",
+    )
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     publication_date = models.DateField(null=True, blank=True)

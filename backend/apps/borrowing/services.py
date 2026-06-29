@@ -7,6 +7,8 @@ from rest_framework.exceptions import ValidationError
 from apps.books.models import Book, Inventory
 from apps.subscriptions.models import UserSubscription
 
+from apps.billing.services import BillingService
+
 from .models import BorrowTransaction
 
 
@@ -52,6 +54,7 @@ class BorrowService:
             subscription.status = UserSubscription.Status.ACTIVE
 
             subscription.save(update_fields=["status"])
+            BillingService.generate_bill(subscription)
         return transaction_obj
 
 
