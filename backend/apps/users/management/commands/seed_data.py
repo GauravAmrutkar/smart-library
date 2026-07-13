@@ -100,7 +100,7 @@ class Command(BaseCommand):
         books = [
             {
                 "title": "Python Crash Course",
-                "isbn": "9781593279288",
+                "isbn_13": "9781593279288",
                 "author": "Eric Matthes",
                 "category": "Python",
                 "price": 799.00,
@@ -108,7 +108,7 @@ class Command(BaseCommand):
             },
             {
                 "title": "Learning Python",
-                "isbn": "9781449355739",
+                "isbn_13": "9781449355739",
                 "author": "Mark Lutz",
                 "category": "Python",
                 "price": 999.00,
@@ -116,7 +116,7 @@ class Command(BaseCommand):
             },
             {
                 "title": "Clean Code",
-                "isbn": "9780132350884",
+                "isbn_13": "9780132350884",
                 "author": "Robert Martin",
                 "category": "Programming",
                 "price": 899.00,
@@ -124,7 +124,7 @@ class Command(BaseCommand):
             },
             {
                 "title": "Refactoring",
-                "isbn": "9780201485677",
+                "isbn_13": "9780201485677",
                 "author": "Martin Fowler",
                 "category": "Programming",
                 "price": 1099.00,
@@ -132,7 +132,7 @@ class Command(BaseCommand):
             },
             {
                 "title": "Atomic Habits",
-                "isbn": "9780735211292",
+                "isbn_13": "9780735211292",
                 "author": "James Clear",
                 "category": "Self Help",
                 "price": 599.00,
@@ -142,7 +142,7 @@ class Command(BaseCommand):
 
         for book_data in books:
             Book.objects.get_or_create(
-                isbn=book_data["isbn"],
+                isbn_13=book_data["isbn_13"],
                 defaults={
                     "title": book_data["title"],
                     "author": author_map[book_data["author"]],

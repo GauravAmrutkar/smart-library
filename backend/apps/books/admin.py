@@ -81,7 +81,7 @@ class BookAdmin(admin.ModelAdmin):
 
     search_fields = (
         "title",
-        "isbn",
+        "isbn_13",
     )
 
     list_filter = (
