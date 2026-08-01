@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from apps.books.models import Author, Book, Category
+from apps.inventory.models import Floor, LibraryBranch, Rack, Shelf
 from apps.subscriptions.models import SubscriptionPlan
 
 
@@ -153,6 +154,162 @@ class Command(BaseCommand):
                 },
             )
 
+        self.stdout.write(self.style.SUCCESS("Creating library branches..."))
+
+        branches = [
+            {
+                "name": "Pune Central Library",
+                "code": "PUN001",
+                "address": "Wakad, Pune",
+                "city": "Pune",
+                "state": "Maharashtra",
+                "postal_code": "411057",
+                "phone": "9876543210",
+                "email": "pune@smartlibrary.com",
+            },
+            {
+                "name": "Mumbai Central Library",
+                "code": "MUM001",
+                "address": "Andheri East, Mumbai",
+                "city": "Mumbai",
+                "state": "Maharashtra",
+                "postal_code": "400069",
+                "phone": "9876543211",
+                "email": "mumbai@smartlibrary.com",
+            },
+            {
+                "name": "Nashik Central Library",
+                "code": "NAS001",
+                "address": "College Road, Nashik",
+                "city": "Nashik",
+                "state": "Maharashtra",
+                "postal_code": "422005",
+                "phone": "9876543212",
+                "email": "nashik@smartlibrary.com",
+            },
+        ]
+
+        for branch in branches:
+            LibraryBranch.objects.get_or_create(
+                code=branch["code"],
+                defaults=branch,
+            )
+
+        self.stdout.write(self.style.SUCCESS("Library branches created successfully."))
+
+        self.stdout.write(self.style.SUCCESS("Creating library floors..."))
+
+        floors = [
+            {
+                "branch_code": "PUN001",
+                "name": "Ground Floor",
+                "code": "GF",
+            },
+            {
+                "branch_code": "PUN001",
+                "name": "First Floor",
+                "code": "FF",
+            },
+            {
+                "branch_code": "MUM001",
+                "name": "Ground Floor",
+                "code": "GF",
+            },
+        ]
+
+        for floor in floors:
+            branch = LibraryBranch.objects.get(code=floor["branch_code"])
+
+            Floor.objects.get_or_create(
+                branch=branch,
+                code=floor["code"],
+                defaults={
+                    "name": floor["name"],
+                },
+            )
+        self.stdout.write(self.style.SUCCESS("Creating racks..."))
+
+        racks = [
+            {
+                "branch": "PUN001",
+                "name": "Programming Rack",
+                "code": "RACK-A",
+            },
+            {
+                "branch": "PUN001",
+                "name": "Technology Rack",
+                "code": "RACK-B",
+            },
+            {
+                "branch": "MUM001",
+                "name": "Programming Rack",
+                "code": "RACK-A",
+            },
+        ]
+
+        for rack in racks:
+            branch = LibraryBranch.objects.get(code=rack["branch"])
+
+            Rack.objects.get_or_create(
+                branch=branch,
+                code=rack["code"],
+                defaults={
+                    "name": rack["name"],
+                },
+            )
+
+        self.stdout.write(self.style.SUCCESS("Racks created successfully."))
+        self.stdout.write(self.style.SUCCESS("Creating shelves..."))
+
+        shelves = [
+            {
+                "branch": "PUN001",
+                "rack": "RACK-A",
+                "name": "Shelf A1",
+                "code": "A1",
+                "capacity": 100,
+            },
+            {
+                "branch": "PUN001",
+                "rack": "RACK-A",
+                "name": "Shelf A2",
+                "code": "A2",
+                "capacity": 100,
+            },
+            {
+                "branch": "PUN001",
+                "rack": "RACK-B",
+                "name": "Shelf B1",
+                "code": "B1",
+                "capacity": 100,
+            },
+            {
+                "branch": "MUM001",
+                "rack": "RACK-A",
+                "name": "Shelf A1",
+                "code": "A1",
+                "capacity": 100,
+            },
+        ]
+
+        for shelf in shelves:
+            branch = LibraryBranch.objects.get(code=shelf["branch"])
+
+            rack = Rack.objects.get(
+                branch=branch,
+                code=shelf["rack"],
+            )
+
+            Shelf.objects.get_or_create(
+                rack=rack,
+                code=shelf["code"],
+                defaults={
+                    "name": shelf["name"],
+                    "capacity": shelf["capacity"],
+                },
+            )
+
+        self.stdout.write(self.style.SUCCESS("Shelves created successfully."))
         subscription_plans = [
             {
                 "name": "Basic",
