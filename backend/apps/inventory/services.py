@@ -1,4 +1,4 @@
-from .models import Rack, Shelf
+from .models import BookCopy, Rack, Shelf
 
 
 class RackService:
@@ -11,3 +11,13 @@ class ShelfService:
     @staticmethod
     def create_shelf(**validated_data):
         return Shelf.objects.create(**validated_data)
+
+
+class BookCopyService:
+
+    @staticmethod
+    def create_copy(**validated_data):
+
+        return BookCopy.objects.create(
+            **validated_data
+        )

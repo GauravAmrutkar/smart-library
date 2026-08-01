@@ -87,3 +87,32 @@ class ShelfAdmin(admin.ModelAdmin):
         "rack",
         "name",
     )
+
+
+@admin.register(BookCopy)
+class BookCopyAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "accession_number",
+        "book",
+        "status",
+        "condition",
+        "shelf",
+    )
+
+    readonly_fields = (
+        "accession_number",
+        "barcode",
+    )
+
+    list_filter = (
+        "status",
+        "condition",
+        "shelf__rack__floor__branch",
+    )
+
+    search_fields = (
+        "accession_number",
+        "barcode",
+        "book__title",
+    )

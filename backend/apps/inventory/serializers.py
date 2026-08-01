@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Floor, LibraryBranch, Rack, Shelf
+from .models import BookCopy, Floor, LibraryBranch, Rack, Shelf
 
 
 class LibraryBranchSerializer(serializers.ModelSerializer):
@@ -71,4 +71,35 @@ class ShelfSerializer(serializers.ModelSerializer):
             "description",
             "capacity",
             "is_active",
+        )
+
+class BookCopySerializer(serializers.ModelSerializer):
+
+    book_title = serializers.CharField(
+        source="book.title",
+        read_only=True,
+    )
+
+    class Meta:
+
+        model = BookCopy
+
+        fields = (
+            "id",
+            "book",
+            "book_title",
+            "shelf",
+            "accession_number",
+            "barcode",
+            "status",
+            "condition",
+            "purchase_date",
+            "purchase_price",
+            "supplier",
+            "remarks",
+        )
+
+        read_only_fields = (
+            "accession_number",
+            "barcode",
         )
