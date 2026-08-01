@@ -1,5 +1,4 @@
 from .constants import BookCopyStatus
-
 from .models import BookCopy, Rack, Shelf
 
 
@@ -20,16 +19,22 @@ class ShelfSelector:
 
 
 class BookCopySelector:
-
     @staticmethod
-    def available_copies(book):
+    def get_available_copy(book):
 
-        return BookCopy.objects.filter(
-            book=book,
-            status=BookCopyStatus.AVAILABLE,
-        ).select_related(
-            "shelf",
-            "shelf__rack",
-            "shelf__rack__floor",
-            "shelf__rack__floor__branch",
+        return (
+            BookCopy.objects.select_for_update()
+            .select_related(
+                "book",
+                "shelf",
+                "shelf__rack",
+                "shelf__rack__floor",
+                "shelf__rack__floor__branch",
+            )
+            .filter(
+                book=book,
+                status=BookCopyStatus.AVAILABLE,
+            )
+            .order_by("accession_number")
+            .first()
         )

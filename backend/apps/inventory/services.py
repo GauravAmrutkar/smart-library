@@ -14,10 +14,7 @@ class ShelfService:
 
 
 class BookCopyService:
-
     @staticmethod
     def create_copy(**validated_data):
 
-        return BookCopy.objects.create(
-            **validated_data
-        )
+        return BookCopy.objects.create(**validated_data)

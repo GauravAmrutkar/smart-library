@@ -4,10 +4,10 @@ Inventory module constants.
 
 from django.db import models
 
-
 # ==========================================================
 # Library Branch
 # ==========================================================
+
 
 class BranchStatus(models.TextChoices):
     ACTIVE = "ACTIVE", "Active"
@@ -17,6 +17,7 @@ class BranchStatus(models.TextChoices):
 # ==========================================================
 # Book Copy
 # ==========================================================
+
 
 class BookCopyStatus(models.TextChoices):
     AVAILABLE = "AVAILABLE", "Available"

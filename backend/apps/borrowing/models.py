@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from apps.books.models import Book
+from apps.inventory.models import BookCopy
 
 
 class BorrowTransaction(models.Model):
@@ -17,6 +18,13 @@ class BorrowTransaction(models.Model):
 
     book = models.ForeignKey(
         Book, on_delete=models.CASCADE, related_name="borrow_transactions"
+    )
+    book_copy = models.ForeignKey(
+        BookCopy,
+        on_delete=models.PROTECT,
+        related_name="borrow_transactions",
+        null=True,
+        blank=True,
     )
 
     borrow_date = models.DateField(auto_now_add=True)

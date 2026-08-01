@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Floor, LibraryBranch, Rack, Shelf
+from .models import BookCopy, Floor, LibraryBranch, Rack, Shelf
 
 
 @admin.register(LibraryBranch)
@@ -91,7 +91,6 @@ class ShelfAdmin(admin.ModelAdmin):
 
 @admin.register(BookCopy)
 class BookCopyAdmin(admin.ModelAdmin):
-
     list_display = (
         "accession_number",
         "book",
@@ -108,7 +107,7 @@ class BookCopyAdmin(admin.ModelAdmin):
     list_filter = (
         "status",
         "condition",
-        "shelf__rack__floor__branch",
+        "shelf",
     )
 
     search_fields = (

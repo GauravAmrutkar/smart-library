@@ -1,14 +1,12 @@
 from django.db import models, transaction
-from django.db.models import Max
-from decimal import Decimal
 
 from apps.books.models import Book
 
 from .constants import (
-    BranchStatus,
-    BookCopyStatus,
     BookCondition,
+    BookCopyStatus,
 )
+
 
 class LibraryBranch(models.Model):
     """
@@ -221,8 +219,6 @@ class Shelf(models.Model):
         return f"{self.rack.code} - {self.code}"
 
 
-
-
 class BookCopy(models.Model):
     """
     Represents a single physical copy of a book.
@@ -303,11 +299,9 @@ class BookCopy(models.Model):
     def save(self, *args, **kwargs):
 
         if not self.accession_number:
-
             self.accession_number = self.generate_accession_number()
 
         if not self.barcode:
-
             self.barcode = self.accession_number
 
         super().save(*args, **kwargs)
@@ -316,15 +310,9 @@ class BookCopy(models.Model):
     def generate_accession_number(cls):
 
         with transaction.atomic():
-
-            last_copy = (
-                cls.objects.select_for_update()
-                .order_by("-id")
-                .first()
-            )
+            last_copy = cls.objects.select_for_update().order_by("-id").first()
 
             if not last_copy:
-
                 return "LIB000001"
 
             last_number = int(
@@ -335,4 +323,21 @@ class BookCopy(models.Model):
             )
 
             return f"LIB{last_number + 1:06d}"
-        
+
+    def mark_as_borrowed(self):
+
+        self.status = BookCopyStatus.BORROWED
+
+        self.save(update_fields=["status"])
+
+    def mark_as_available(self):
+
+        self.status = BookCopyStatus.AVAILABLE
+
+        self.save(update_fields=["status"])
+
+    def mark_as_reserved(self):
+
+        self.status = BookCopyStatus.RESERVED
+
+        self.save(update_fields=["status"])

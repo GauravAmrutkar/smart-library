@@ -1,11 +1,9 @@
-from datetime import timedelta
-
 from django.db import transaction
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
-from apps.billing.services import BillingService
-from apps.books.models import Book, Inventory
+from apps.books.models import Book
+from apps.inventory.selectors import BookCopySelector
 from apps.subscriptions.models import UserSubscription
 
 from .models import BorrowTransaction
@@ -13,48 +11,46 @@ from .models import BorrowTransaction
 
 class BorrowService:
     @staticmethod
+    @transaction.atomic
     def borrow_book(user, book_id):
 
         subscription = (
-            UserSubscription.objects.filter(user=user, status="ACTIVE")
-            .select_related("plan")
+            UserSubscription.objects.select_related("plan")
+            .filter(
+                user=user,
+                status="ACTIVE",
+            )
             .first()
         )
 
         if not subscription:
-            raise ValidationError("No active subscription found.")
+            raise ValidationError("No active subscription.")
 
         active_books = BorrowTransaction.objects.filter(
-            user=user, status="BORROWED"
+            user=user,
+            status="BORROWED",
         ).count()
 
         if active_books >= subscription.plan.max_active_books:
             raise ValidationError("Borrow limit reached.")
 
-        with transaction.atomic():
-            book = Book.objects.select_related("inventory").get(id=book_id)
+        book = Book.objects.get(id=book_id)
 
-            inventory = Inventory.objects.select_for_update().get(book=book)
+        copy = BookCopySelector.get_available_copy(book)
 
-            if inventory.available_library_stock <= 0:
-                raise ValidationError("Book unavailable.")
+        if not copy:
+            raise ValidationError("No copy available.")
 
-            inventory.available_library_stock -= 1
+        copy.mark_as_borrowed()
 
-            inventory.save()
+        transaction = BorrowTransaction.objects.create(
+            user=user,
+            book=book,  # Keep for now
+            book_copy=copy,  # New field
+            status="BORROWED",
+        )
 
-            due_date = timezone.now().date() + timedelta(days=15)
-
-            transaction_obj = BorrowTransaction.objects.create(
-                user=user,
-                book=book,
-                due_date=due_date,
-            )
-            subscription.status = UserSubscription.Status.ACTIVE
-
-            subscription.save(update_fields=["status"])
-            BillingService.generate_bill(subscription)
-        return transaction_obj
+        return transaction
 
 
 class ReturnService:
@@ -81,13 +77,17 @@ class ReturnService:
             if transaction_obj.status == BorrowTransaction.Status.RETURNED:
                 raise ValidationError("Book already returned.")
 
-            inventory = Inventory.objects.select_for_update().get(
-                book=transaction_obj.book
+            borrow = BorrowTransaction.objects.get(
+                id=transaction_id,
             )
 
-            inventory.available_library_stock += 1
+            borrow.status = "RETURNED"
 
-            inventory.save()
+            borrow.return_date = timezone.now()
+
+            borrow.save()
+
+            borrow.book_copy.mark_as_available()
 
             transaction_obj.status = BorrowTransaction.Status.RETURNED
 

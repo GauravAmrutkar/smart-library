@@ -73,15 +73,14 @@ class ShelfSerializer(serializers.ModelSerializer):
             "is_active",
         )
 
-class BookCopySerializer(serializers.ModelSerializer):
 
+class BookCopySerializer(serializers.ModelSerializer):
     book_title = serializers.CharField(
         source="book.title",
         read_only=True,
     )
 
     class Meta:
-
         model = BookCopy
 
         fields = (

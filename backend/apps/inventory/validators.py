@@ -24,18 +24,12 @@ class ShelfValidator:
         ).exists():
             raise ValidationError({"code": "Shelf code already exists in this rack."})
 
-class BookCopyValidator:
 
+class BookCopyValidator:
     @staticmethod
     def validate_shelf_capacity(shelf):
 
         current = shelf.book_copies.count()
 
         if current >= shelf.capacity:
-
-            raise ValidationError(
-                {
-                    "shelf":
-                    "Shelf capacity exceeded."
-                }
-            )
+            raise ValidationError({"shelf": "Shelf capacity exceeded."})
